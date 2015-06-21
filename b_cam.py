@@ -1,5 +1,6 @@
 from bottle import error, get, post, request, route, run, template, static_file, SimpleTemplate
 import time
+import pickle
 import picamera
 from picamera.color import Color
 from fractions import Fraction
@@ -10,11 +11,11 @@ from fractions import Fraction
 @route('/home')
 @route('/index.html')
 def welcome():
-    return template('home.tpl')
+    return template('home.tpl', mi='home')
 
 @get('/cam')
 def cam():
-    return template('settings.tpl')
+    return template('settings.tpl', mi='cam')
 
 @post('/cam')
 def cam_capture():
@@ -46,20 +47,40 @@ def cam_capture():
 
     cam.image_effect = effect
     
-    cam.capture('/home/pi/python/cam/images/a.jpg')
+    cam.capture('/home/pi/Projects/cam/images/a.jpg')
     cam.close()
 
-    return template('pic.tpl', ft=filetype, rx=resx[res], ry=resy[res], style=style, fx=effect, note=caption)    
+    r = {'filetype' : filetype,
+         'rx' : resx[res],
+         'ry' : resy[res],
+         'style' : style,
+         'effect' : effect,
+         'caption' : caption }
+    
+    f = open('a.txt', 'w')
+    pickle.dump(r, f)
+    f.close()
+
+    return template('pic.tpl', mi='pic', ft=filetype, rx=resx[res], ry=resy[res], style=style, fx=effect, note=caption)    
+
 
 @route('/pic')
 def pic():
-    return static_file("a.jpg", root="/home/pi/python/cam/images")
+    f = open('a.txt', 'r')
+    r = pickle.load(f)
+    f.close()
+    return template('pic.tpl', mi='pic', ft=r['filetype'], rx=r['rx'], ry=r['ry'], style=r['style'], fx=r['effect'], note=r['caption'])
+
+    
+@route('/lastpic')
+def lastpic():
+    return static_file("a.jpg", root="/home/pi/Projects/cam/images")
 
 #
 # Manage static resoures
 @route('/static/<path:path>')
 def serve_static(path):
-    return static_file(path, root="/home/pi/python/cam/static")
+    return static_file(path, root="/home/pi/Projects/cam/static")
 
 #
 # Handle Errors (404 - File Not Found)
@@ -67,4 +88,4 @@ def serve_static(path):
 def error404(error):
     return 'Page Missing.'
 
-run(host='192.168.1.58', port=8080, debug=True)
+run(host='192.168.1.39', port=8080, debug=True)

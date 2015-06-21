@@ -1,5 +1,5 @@
 % include('beginhtml.tpl')
-% include('mainmenu.tpl')
+% include('mainmenu.tpl', mi='home')
 <div class="container">
   <div class="jumbotron">
     <h1>Heading One</h1>
