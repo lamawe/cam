@@ -11,11 +11,11 @@ from fractions import Fraction
 @route('/home')
 @route('/index.html')
 def welcome():
-    return template('home.tpl', mi='home')
+    return template('home.tpl')
 
 @get('/cam')
 def cam():
-    return template('settings.tpl', mi='cam')
+    return template('settings.tpl')
 
 @post('/cam')
 def cam_capture():
@@ -57,19 +57,19 @@ def cam_capture():
          'effect' : effect,
          'caption' : caption }
     
-    f = open('a.txt', 'w')
+    f = open('/home/pi/Projects/cam/images/a.txt', 'w')
     pickle.dump(r, f)
     f.close()
 
-    return template('pic.tpl', mi='pic', ft=filetype, rx=resx[res], ry=resy[res], style=style, fx=effect, note=caption)    
+    return template('pic.tpl', ft=filetype, rx=resx[res], ry=resy[res], style=style, fx=effect, note=caption)    
 
 
 @route('/pic')
 def pic():
-    f = open('a.txt', 'r')
+    f = open('/home/pi/Projects/cam/images/a.txt', 'r')
     r = pickle.load(f)
     f.close()
-    return template('pic.tpl', mi='pic', ft=r['filetype'], rx=r['rx'], ry=r['ry'], style=r['style'], fx=r['effect'], note=r['caption'])
+    return template('pic.tpl', ft=r['filetype'], rx=r['rx'], ry=r['ry'], style=r['style'], fx=r['effect'], note=r['caption'])
 
     
 @route('/lastpic')

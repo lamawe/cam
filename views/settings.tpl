@@ -1,5 +1,5 @@
 % include('beginhtml.tpl')
-% include('mainmenu.tpl')
+% include('mainmenu.tpl', mi='cam')
 <div class="container">
 <form action="/cam" method="post">
   <div class="form-group">
